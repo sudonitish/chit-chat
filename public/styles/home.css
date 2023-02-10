@@ -1,0 +1,583 @@
+body {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#mainContainer {
+  /* filter: blur(8px); */
+  position: absolute;
+  top: 0px;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  min-width: 760px;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0px;
+
+}
+
+#showChatsContainer {
+  position: relative;
+  height: 100%;
+  width: 40%;
+  min-width: 400px;
+  background-color: #fff;
+  overflow: hidden;
+  padding: 10px;
+  height: auto;
+  box-shadow: 2px 0px 4px 0px #939393;
+
+
+}
+
+#userProfileDetailsContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+#profileImageContainer {
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  min-height: 100px;
+  border-radius: 50%;
+  margin: 10px;
+  border: 5px solid;
+  overflow: hidden;
+  /* box-sizing: border-box; */
+}
+
+#profilePicture {
+  height: 100px;
+  width: 100px;
+}
+
+#otherProfileDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 0px 0 10px;
+}
+
+#userNameAndEmail {
+  display: flex;
+  flex-direction: column;
+}
+
+#nameOfUser {
+  font-weight: bold;
+  font-size: 30px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  text-transform: uppercase;
+}
+
+#email {
+  font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+}
+
+#userMenu {
+  background-color: transparent;
+  border: none;
+  height: 30px;
+  width: 30px;
+}
+
+#userMenu:hover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#menuOptions {
+  position: absolute;
+  top: 145px;
+  left: 0px;
+  height: 0px;
+  width: 100%;
+  box-shadow: 1px 1px 4px 0px #939393;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+
+  transition: height 100ms ease-in-out;
+}
+
+#menuOptions a {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  box-shadow: 0px 0px 1px 0px #939393;
+  text-decoration: none;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #000;
+}
+
+#userInput {
+  width: 100%;
+  display: flex;
+}
+
+#searchUser {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin: 10px 10px 0 0;
+  padding: 0px 10px 0 10px;
+  border-radius: 5px;
+  background-color: #0000001f;
+}
+
+#createGroup {
+  height: 50px;
+  width: 50px;
+  margin: 10px 10px 0 0;
+  font-size: 25px;
+  border: none;
+  background-color: #ffffff;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#add {
+  height: 50px;
+  width: 50px;
+  margin: 0 0 2px 0px;
+  font-size: 25px;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  font-weight: bold;
+
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#add svg {
+  height: 30px;
+  width: 30px;
+  fill: gray;
+}
+
+#createGroup svg {
+  height: 40px;
+  width: 40px;
+  fill: gray;
+}
+
+#createGroup svg:hover {
+  height: 30px;
+  width: 30px;
+
+
+}
+
+#searchForUser {
+  height: 50px;
+  width: 100%;
+  font-size: 25px;
+  outline: none;
+  border: none;
+  font-weight: bold;
+  padding: 0 10px 0 10px;
+  background-color: transparent;
+  color: #000000;
+}
+
+#showChats {
+  margin: 20px 0 0 0;
+  height: calc(100% - 225px);
+  overflow: auto;
+  padding: 10px 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+#chatContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  min-width: 480px;
+  box-sizing: border-box;
+
+}
+
+#chatDetails {
+  background-color: #c0e9e924;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  height: 120px;
+  width: 100%;
+  margin: 0 0 0 2px;
+  box-shadow: 0px 2px 4px 0px #1f3c78ab;
+}
+
+#chatImageOnScreen {
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  margin: 0 0 0 20px;
+  /* border: 2px solid; */
+}
+
+#chatNameOnScreen {
+  font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 30px;
+  margin: 0 0 0 20px;
+}
+
+#showMessage {
+  padding: 20px 20px 20px 20px;
+  height: calc(100% - 240px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#messageSendContainer {
+  display: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #0000001f;
+  margin: 0 10px;
+}
+
+#messageToSend {
+  height: 50px;
+  width: 100%;
+  font-size: 25px;
+  outline: none;
+  border: none;
+  font-weight: bold;
+  padding: 0 10px 0 10px;
+  background-color: transparent;
+  color: #000000;
+
+}
+
+#send {
+  height: 50px;
+  width: 50px;
+  margin: 0 0 0 0px;
+  display: flex;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+  font-weight: bold;
+}
+
+#send svg {
+  height: 40px;
+  width: 40px;
+  fill: grey;
+}
+
+#send svg:hover {
+  height: 30px;
+  width: 30px;
+}
+
+
+.chatBox {
+  height: 110px;
+  width: 99%;
+  margin: 4px 0 0 0;
+  background-color: #c0e9e924;
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  box-shadow: 1px 1px 4px 0px #1f3c78ab;
+}
+
+.chatBox:hover {
+  background-color: #9a9a9a;
+}
+
+.chatPicture {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+}
+
+.chatDescription {
+  width: 220px;
+  padding: 0 10px 0 10px;
+  display: flex;
+  flex-direction: column;
+}
+.chatCount{
+  width: auto;
+  font-size: 15px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-weight: bold;
+}
+.chatCountContainer{
+  display: none;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #33eb004d;
+  border-radius: 50%;
+  
+}
+.chatName {
+  color: #000;
+  font-weight: bold;
+  font-size: 23px;
+  font-family: sans-serif;
+
+}
+
+.latestMessage {
+  color: #000;
+  font-size: 14px;
+  margin: 10px 0 10px 0;
+  font-family: sans-serif;
+
+}
+
+.sendedMessage {
+  background-color: #c8d2f5;
+  width: 40%;
+  padding: 15px 10px 15px 10px;
+  margin: 0px 0 10px 0px;
+  line-break: anywhere;
+  color: #000;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: sans-serif;
+  border-radius: 5px;
+  box-shadow: 1px 1px 4px 0px #031cab;
+}
+
+.receavedMessage {
+  background-color: #eed2f1;
+  width: 40%;
+  padding: 15px 10px 15px 10px;
+  margin: 0px 0 10px 0px;
+  line-break: anywhere;
+  color: #000;
+  font-size: 20px;
+  font-weight: bold;
+  align-self: flex-end;
+  font-family: sans-serif;
+  border-radius: 5px;
+  box-shadow: 1px 1px 4px 0px #bc18d6;
+}
+
+.addGroupDetails {
+  position: absolute;
+  top: 0;
+  left: 0%;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.groupNameContainer,
+.addParticipantsContainer {
+  position: relative;
+  display: flex;
+  width: calc(100%-20px);
+  align-items: center;
+  margin: 10px 10px 40px 10px;
+  padding: 0px 10px 0 10px;
+  border-radius: 5px;
+  background-color: #0000001f;
+}
+
+.groupName,
+.addParticipantsText {
+  font-size: 25px;
+  height: 50px;
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 20px 0 20px;
+  outline: none;
+  background-color: transparent;
+  color: #000000;
+  border: none;
+
+}
+
+
+.createGroupButton,
+.addParticipantsButton {
+  width: 50px;
+  font-size: 25px;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.createGroupButton svg {
+  height: 40px;
+  width: 40px;
+  fill: gray;
+}
+
+.addParticipantsButton svg {
+  height: 30px;
+  width: 30px;
+  fill: gray;
+}
+
+.createGroupButton svg:hover {
+  height: 30px;
+  width: 30px;
+}
+
+.addParticipantsButton svg:hover {
+  height: 25px;
+  width: 25px;
+}
+
+.titleContainer {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}
+
+.groupTitle {
+  color: #000000;
+  font-weight: bold;
+  font-size: 25px;
+  font-family: sans-serif;
+  display: flex;
+}
+
+.closeContainer {
+  top: 0;
+  right: left;
+}
+
+.close {
+  padding: 10px 10px;
+  border: none;
+  background-color: transparent;
+}
+
+.close svg:hover {
+  color: #3a3a3a;
+  height: 25px;
+}
+
+.showParticipants {
+  margin: 20px 10px 20px 10px;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.participant {
+  background: #c0e9e98c;
+  padding: 10px 20px;
+  margin: 0px 0px 10px 10px;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 20px;
+  font-family: system-ui;
+
+}
+#editGroupContainer{
+  position: absolute;
+  top:122px;
+  left:2px;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.groupNameUpdateInputContainer,
+.addParticipantInGroupByUserOnUpdateContainer{
+  position: relative;
+  display: flex;
+  width: calc(100%-20px);
+  align-items: center;
+  margin: 10px 10px 10px 10px;
+  padding: 0px 10px 0 10px;
+  border-radius: 5px;
+  background-color: #0000001f;
+}
+.groupNameUpdateInput,
+.addParticipantInGroupByUserOnUpdate{
+  font-size: 25px;
+  height: 50px;
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 20px 0 20px;
+  outline: none;
+  background-color: transparent;
+  color: #000000;
+  border: none;
+}
+.groupNameUpdateInputButton,
+.addParticipantInGroupByUserOnUpdateButton{
+  width: 50px;
+  font-size: 25px;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.showParticipantsInGroupOnUpdate{
+  margin: 40px 10px 20px 10px;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.groupNameUpdateInputButton svg {
+  height: 30px;
+  width: 30px;
+  fill: gray;
+}
+
+.addParticipantInGroupByUserOnUpdateButton svg {
+  height: 40px;
+  width: 40px;
+  fill: gray;
+}
+
+.groupNameUpdateInputButton svg:hover {
+  height: 25px;
+  width: 25px;
+}
+
+.addParticipantInGroupByUserOnUpdateButton svg:hover {
+  height: 30px;
+  width: 30px;
+}

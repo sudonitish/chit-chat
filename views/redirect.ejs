@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect</title>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1{
+            color: #058005;
+        }
+        h2{
+            color: #ff0000;
+        }
+        span{
+            font-weight: bold;
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="message"><%=message%></h1>
+    <h2>Redirect in <span id="timer">10</span> seconds.</h2>
+</body>
+<script>
+    let message=document.getElementById('message');
+    let timer=document.getElementById('timer');
+    let id;
+    let count=9;
+    id=setInterval(()=>{
+        timer.innerHTML=count--;
+    },1000)
+    setTimeout(()=>{
+        clearInterval(id);
+        window.location.href = "http://localhost:3000/"
+    },10000)
+</script>
+</html>

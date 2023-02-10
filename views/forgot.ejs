@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot</title>
+    <link rel="stylesheet" href="/forgot.css">
+</head>
+<body>
+    <form method="POST" action="/api/user/forgot">
+        <label for="signupTeext" id="forgotText">Forgot password?</label>
+
+        <label for="email" class="inputLabel">Enter email id</label>
+        <input type="email" name="email" id="email" value="<%=savedEmail%>"/>
+        <label for="error" class="error"><%=emailErr%></label>
+
+        <button type="submit" id="submit">Reset</button>
+        <a href="/api/user/login"><button type="button" id="login">Login</button></a>
+    </form>
+
+</body>
+</html>
