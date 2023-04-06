@@ -8,11 +8,11 @@ const http = require("http");
 const app = express();
 const server = http.createServer(app)
 const io = new Server(server);
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 dotenv.config();
 const PORT = process.env.PORT || 3000
+connectDB();
 
-connectDB()
 app.use(express.static('public/styles'));
 app.use(express.static('public/scripts'));
 app.use(express.static('uploads'));

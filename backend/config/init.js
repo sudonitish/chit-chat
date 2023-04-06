@@ -1,14 +1,36 @@
 const mongoose = require('mongoose');
+const mysql = require('mysql2');
+const dotenv = require('dotenv');
+const connection = require('./mySQLconnection');
+const userModel = require('../models/sqlModels/userModel');
+const chatModel = require('../models/sqlModels/chatModel');
+const messageModel = require('../models/sqlModels/messageModel');
+const constraintsModel = require('../models/sqlModels/constraintsModel');
 
-const connectDB = async () => {
-    mongoose.set('strictQuery', false);
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URI)
-        console.log(`MongoDB connected: ${conn.connection.host}`)
+
+
+dotenv.config();
+module.exports = async function () {
+    if (process.env.DB === 'mySQL') {
+        connection.connect((err) => {
+            if (err) throw err;
+            console.log('Connected to MySQL database!');
+        });
+        userModel();
+        chatModel();
+        messageModel();
+        constraintsModel();
     }
-    catch (err) {
-        console.log(`ERROR: ${err.message}`)
-        process.exit()
+    else {
+            mongoose.set('strictQuery', false);
+            try {
+                const conn = await mongoose.connect(process.env.MONGO_URI)
+                console.log(`MongoDB connected: ${conn.connection.host}`)
+            }
+            catch (err) {
+                console.log(`ERROR: ${err.message}`)
+                process.exit()
+            }
     }
-};
-module.exports = connectDB;
+}
+

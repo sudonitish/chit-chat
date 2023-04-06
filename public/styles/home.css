@@ -123,6 +123,140 @@ body {
   font-weight: bold;
   color: #000;
 }
+#menuOptions div {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  box-shadow: 0px 0px 1px 0px #939393;
+  text-decoration: none;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+}
+.editProfileContainer{
+  position: absolute;
+  top:0;
+  left :0;
+  bottom: 0;
+  width: 100%;
+  min-width: 400px;
+  background-color: #fff;
+  overflow: hidden;
+  padding: 10px;
+  height: auto;
+  box-shadow: 2px 0px 4px 0px #939393;
+}
+.profilePictureToEditContainer{
+  position: absolute;
+  left: 50%;
+  top: 150px;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, 10px);
+}
+.profilePictureToEdit{
+  height: 200px;
+  width: 200px;
+  border: 3px solid #000;
+  border-radius: 50%;
+  
+  
+}
+.profilePictureToEditContainer:hover{
+filter: blur(2px);
+}
+
+.profilePictureToEditPen{
+  position: absolute;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background: transparent;
+  z-index: 100;
+  opacity: 0;
+
+}
+.profilePictureToEditContainer:hover .profilePictureToEditPen{
+  opacity: 1;
+}
+.profilePictureToEditUpload{
+  position: absolute;
+  height: 200px;
+  width: 200px;
+  opacity: 0;
+}
+.closeEditProfileContainerButton svg{
+  height: 30px;
+  width: 30px;
+  fill: gray;
+}
+.closeEditProfileContainerButton svg:hover{
+  height: 25px;
+  width: 25px;
+}
+#export {
+  background-color: transparent;
+  border: none;
+  top: 50px;
+  position: absolute;
+  right: 25px;
+}
+
+#export svg {
+
+  height: 25px;
+  width: 25px;
+  fill: gray;
+}
+
+#export svg:hover {
+  height: 23px;
+  width: 23px;
+}
+
+#exportContainer {
+  padding: 10px;
+  left: 2px;
+  top: 122px;
+  right: 0;
+  position: absolute;
+  box-shadow: 0 1px 8px 0 #3a3a3a;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+#exportContainer input {
+  height: 40px;
+  font-size: 18px;
+  border-radius: 5px;
+  border: none;
+  background-color: #0000001f;
+  outline: none;
+  padding: 0 20px;
+}
+
+#exportContainer label {
+  font-size: 18px;
+  margin: 10px 0 0 0;
+  font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#exportButton {
+  margin: 20px 0 0 0;
+  height: 40px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  background-color: #939393;
+  color: #fff;
+  font-weight: bold;
+  font-size: 20px;
+}
 
 #userInput {
   width: 100%;
@@ -205,8 +339,8 @@ body {
   height: calc(100% - 225px);
   overflow: auto;
   padding: 10px 0px;
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 #chatContainer {
@@ -325,13 +459,15 @@ body {
   display: flex;
   flex-direction: column;
 }
-.chatCount{
+
+.chatCount {
   width: auto;
   font-size: 15px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-weight: bold;
 }
-.chatCountContainer{
+
+.chatCountContainer {
   display: none;
   height: 40px;
   width: 40px;
@@ -340,8 +476,9 @@ body {
   justify-content: center;
   background-color: #33eb004d;
   border-radius: 50%;
-  
+
 }
+
 .chatName {
   color: #000;
   font-weight: bold;
@@ -365,11 +502,14 @@ body {
   margin: 0px 0 10px 0px;
   line-break: anywhere;
   color: #000;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   font-family: sans-serif;
   border-radius: 5px;
   box-shadow: 1px 1px 4px 0px #031cab;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
 }
 
 .receavedMessage {
@@ -385,6 +525,20 @@ body {
   font-family: sans-serif;
   border-radius: 5px;
   box-shadow: 1px 1px 4px 0px #bc18d6;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.senderEmail {
+  color: #000;
+  display: block;
+}
+
+.innerMessage {
+  margin: 10px 0 0 0;
+  display: block;
+  font-weight: lighter;
 }
 
 .addGroupDetails {
@@ -508,18 +662,20 @@ body {
   font-family: system-ui;
 
 }
-#editGroupContainer{
+
+#editGroupContainer {
   position: absolute;
-  top:122px;
-  left:2px;
+  top: 122px;
+  left: 2px;
   bottom: 0;
   right: 0;
   background-color: #fff;
   display: flex;
   flex-direction: column;
 }
+
 .groupNameUpdateInputContainer,
-.addParticipantInGroupByUserOnUpdateContainer{
+.addParticipantInGroupByUserOnUpdateContainer {
   position: relative;
   display: flex;
   width: calc(100%-20px);
@@ -529,8 +685,9 @@ body {
   border-radius: 5px;
   background-color: #0000001f;
 }
+
 .groupNameUpdateInput,
-.addParticipantInGroupByUserOnUpdate{
+.addParticipantInGroupByUserOnUpdate {
   font-size: 25px;
   height: 50px;
   width: 100%;
@@ -541,8 +698,9 @@ body {
   color: #000000;
   border: none;
 }
+
 .groupNameUpdateInputButton,
-.addParticipantInGroupByUserOnUpdateButton{
+.addParticipantInGroupByUserOnUpdateButton {
   width: 50px;
   font-size: 25px;
   border: none;
@@ -553,7 +711,8 @@ body {
   justify-content: center;
   align-items: center;
 }
-.showParticipantsInGroupOnUpdate{
+
+.showParticipantsInGroupOnUpdate {
   margin: 40px 10px 20px 10px;
   padding: 0 20px;
   display: flex;

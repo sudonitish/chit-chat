@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exports</title>
+    <link rel="stylesheet" href="/exports.css">
+</head>
+
+<body>
+    <div id="profile">
+        <img src="<%=picture%>" alt="" id="picture">
+        <label for="chatName" id="name"><%=name%></label>
+    </div>
+    <%messages.forEach(message=>{%>
+        <div class="message">
+            <%if(message.sender.email===email){%>
+                <label class="messageSender">You</label>
+                <%}else{%>
+                    <label class="messageSender">
+                        <%=message.sender.email%>
+                    </label>
+                    <%}%>
+                    <label class="messageData">
+                        Message: <%=message.content%>
+                    </label>
+                    <label class="messageTime">
+                        <%=message.createdAt%>
+                    </label>
+        </div>
+        <%})%>
+        <script>
+            print();
+        </script>
+</body>
+
+</html>

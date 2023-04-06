@@ -1,16 +1,18 @@
 const { reset } = require('colors');
 const express = require('express');
 const { verify } = require('jsonwebtoken');
-const { getSignUpPage, registerUser, verifyUser, getLoginPage, authorizeUser, getForgotPasswordPage, sendResetPasswordLink, getResetPasswordPage, resetToNewPassword ,getResetPasswordOnProfile,setResetPasswordOnProfile,logOutFromChat,searchUser} = require("../controllers/userControllers");
+const { getSignUpPage, registerUser, verifyUser, getLoginPage, authorizeUser, getForgotPasswordPage, sendResetPasswordLink, getResetPasswordPage, resetToNewPassword, getResetPasswordOnProfile, setResetPasswordOnProfile, logOutFromChat, searchUser, changeProfileOfUser } = require("../controllers/userControllers");
 const router = express.Router()
 const multer = require('multer');
+
+
 const whiteList = [
     'image/png',
     'image/jpeg',
     'image/jpg',
     'image/webp'
-  ]
-  const imageMulter = multer({
+]
+const imageMulter = multer({
     storage: multer.diskStorage({
         destination: (request, file, callback) => callback(null, "uploads"),
         filename: (request, file, callback) => callback(null, Date.now() + "_" + file.originalname)
@@ -21,12 +23,14 @@ const whiteList = [
         }
         callback(null, true)
     }
-  });
-  
+});
+
 const imageUploadMiddleware = imageMulter.single('displayPicture');
+
+
 router.route('/signup')
     .get(getSignUpPage)
-    .post(imageUploadMiddleware,registerUser)
+    .post(imageUploadMiddleware, registerUser)
 
 router.route('/login')
     .get(getLoginPage)
@@ -54,5 +58,7 @@ router.route('/logout')
 
 router.route('/serchUser')
     .get(searchUser)
-    
+router.route('/changeProfile')
+    .post(imageUploadMiddleware, changeProfileOfUser)
+
 module.exports = router;

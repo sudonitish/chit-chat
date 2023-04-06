@@ -3,7 +3,11 @@ const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcryptjs')
-const { validateName, validateEmail, validatePassword, saveUserToDB, verifyJWT, findUserByEmail, findUserByID } = require('../config/methods/userLoginMethods')
+const dotenv = require('dotenv');
+
+const { validateName, validateEmail, validatePassword, saveUserToDB, verifyJWT, updatePassword, findUserByEmail, findUserByID, updatePictureOnMyProfile } = (process.env.DB === 'mySQL') ? require('../methods/sqlMethods/userLoginMethods') : require('../methods/mongoMethods/userLoginMethods')
+
+dotenv.config();
 let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -34,95 +38,97 @@ const getSignUpPage = asyncHandler(async (req, res) => {
     }
 })
 const registerUser = asyncHandler(async (req, res) => {
-    let errors = {
-        nameErr: "",
-        emailErr: "",
-        passwordErr: "",
-        cpasswordErr: "",
-        savedName: req.body.name,
-        savedEmail: req.body.email,
-        savedPassword: req.body.password,
-        savedCPassword: req.body.cpassword,
-    }
-    let err;
-    err = validateName(req.body.name);
-    if (err) {
-        errors.nameErr = err;
-        res.render('signup.ejs', errors)
-        return;
-    }
-    err = validateEmail(req.body.email)
-    if (err) {
-        errors.emailErr = err;
-        res.render('signup.ejs', errors)
-        return
-    }
-    err = validatePassword(req.body.password)
-    if (err) {
-        errors.passwordErr = err;
-        res.render('signup.ejs', errors)
-        return
-    }
-    err = validatePassword(req.body.cpassword)
-    if (err) {
-        errors.cpasswordErr = err;
-        res.render('signup.ejs', errors)
-        return
-    }
-    if (req.body.password !== req.body.cpassword) {
-        errors.cpasswordErr = "password does'nt match!";
-        res.render('signup.ejs', errors)
-        return
-    }
-    findUserByEmail(req.body.email, (err, user) => {
-        if (err) {
-            console.log(err)
-            res.render('serverError.ejs', { errorType: "Server Error!", error: err })
+        let errors = {
+            nameErr: "",
+            emailErr: "",
+            passwordErr: "",
+            cpasswordErr: "",
+            savedName: req.body.name,
+            savedEmail: req.body.email,
+            savedPassword: req.body.password,
+            savedCPassword: req.body.cpassword,
         }
-        else {
-            if (user.length !== 0) {
-                errors.emailErr = "email already exisits"
-                res.render('signup.ejs', errors)
+        let err;
+        err = validateName(req.body.name);
+        if (err) {
+            errors.nameErr = err;
+            res.render('signup.ejs', errors)
+            return;
+        }
+        err = validateEmail(req.body.email)
+        if (err) {
+            errors.emailErr = err;
+            res.render('signup.ejs', errors)
+            return
+        }
+        err = validatePassword(req.body.password)
+        if (err) {
+            errors.passwordErr = err;
+            res.render('signup.ejs', errors)
+            return
+        }
+        err = validatePassword(req.body.cpassword)
+        if (err) {
+            errors.cpasswordErr = err;
+            res.render('signup.ejs', errors)
+            return
+        }
+        if (req.body.password !== req.body.cpassword) {
+            errors.cpasswordErr = "password does'nt match!";
+            res.render('signup.ejs', errors)
+            return
+        }
+
+
+        findUserByEmail(req.body.email, (err, user) => {
+            if (err) {
+                console.log(err)
+                res.render('serverError.ejs', { errorType: "Server Error!", error: err })
             }
             else {
-                let pictureUploaded = 'default.png';
-                if (req.file) {
-                    pictureUploaded=req.file.filename
+                if (user.length !== 0) {
+                    errors.emailErr = "email already exisits"
+                    res.render('signup.ejs', errors)
                 }
-                const secret = process.env.JWT_SECRET + req.body.name;
-                const payload = {
-                    name: req.body.name,
-                    email: req.body.email,
-                    password: req.body.password,
-                    picture:pictureUploaded,
-                    isAdmin: false
-
-                }
-                const token = jwt.sign(payload, secret)
-                const link = `http://localhost:3000/api/user/verify/${payload.name}/${token}`
-
-                let mailOptions = {
-                    from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
-                    to: req.body.email,
-                    subject: " Email Verification ✔",
-                    html: `To verify email address <a href=${link}>click</a> here.`,
-                };
-                transporter.sendMail(mailOptions, (err, info) => {
-                    if (err) {
-                        console.log(err)
+                else {
+                    let pictureUploaded = 'default.png';
+                    if (req.file) {
+                        pictureUploaded = req.file.filename
                     }
-                    else {
-                        console.log("email send success", info.response)
+                    const secret = process.env.JWT_SECRET + req.body.email;
+                    const payload = {
+                        name: req.body.name,
+                        email: req.body.email,
+                        password: req.body.password,
+                        picture: pictureUploaded,
+                        isAdmin: false
 
                     }
-                })
+                    const token = jwt.sign(payload, secret)
+                    const link = `http://localhost:3000/api/user/verify/${payload.email}/${token}`
 
-                res.render('redirect.ejs', { message: 'Please verify your email address,verification email send to your email...' })
+                    let mailOptions = {
+                        from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
+                        to: req.body.email,
+                        subject: " Email Verification ✔",
+                        html: `To verify email address <a href=${link}>click</a> here.`,
+                    };
+                    transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                        else {
+                            console.log("email send success", info.response)
 
-                return
+                        }
+                    })
+
+                    res.render('redirect.ejs', { message: 'Please verify your email address,verification email send to your email...' })
+
+                    return
+                }
             }
-        }
-    })
+        })
 })
 const verifyUser = asyncHandler(async (req, res) => {
     const { name, token } = req.params;
@@ -143,7 +149,7 @@ const verifyUser = asyncHandler(async (req, res) => {
                         res.redirect('/api/user/login')
                     }
                     else {
-                        saveUserToDB(payload, (err,data) => {
+                        saveUserToDB(payload, (err, data) => {
                             if (err) {
                                 res.render('serverError.ejs', { errorType: "Server Error!", error: err })
                                 console.log('error saving')
@@ -171,7 +177,7 @@ const verifyUser = asyncHandler(async (req, res) => {
                                 req.session.email = req.body.email;
                                 req.session.userId = data._id;
                                 req.session.name = data.name;
-                                req.session.picture=data.picture
+                                req.session.picture = data.picture
                                 return;
                             }
                         })
@@ -182,7 +188,6 @@ const verifyUser = asyncHandler(async (req, res) => {
         }
     })
 })
-
 const getLoginPage = asyncHandler(async (req, res) => {
     let errors = {
         emailErr: "",
@@ -227,7 +232,7 @@ const authorizeUser = asyncHandler(async (req, res) => {
                 else {
                     req.session.is_logged_in = true;
                     req.session.email = req.body.email;
-                    req.session.userId = user[0].id;
+                    req.session.userId = (process.env.DB === 'mySQL') ? user[0].userID : user[0].id;
                     req.session.name = user[0].name;
                     req.session.picture = user[0].picture;
 
@@ -243,8 +248,6 @@ const authorizeUser = asyncHandler(async (req, res) => {
     })
 
 })
-
-
 const getForgotPasswordPage = asyncHandler(async (req, res) => {
     let errors = {
         emailErr: "",
@@ -275,13 +278,14 @@ const sendResetPasswordLink = asyncHandler(async (req, res) => {
                 res.render('forgot.ejs', errors)
             }
             else {
-                const secret = process.env.JWT_SECRET + user[0].password;
+                const secret = process.env.JWT_SECRET + user[0].email;
+                const userID = (process.env.DB === 'mySQL') ? user[0].userID : user[0].id;
                 const payload = {
                     email: user[0].email,
-                    id: user[0].id,
+                    id: userID
                 }
-                const token = jwt.sign(payload, secret, { expiresIn: '1m' })
-                const link = `http://localhost:3000/api/user/reset/${user[0].id}/${token}`
+                const token = jwt.sign(payload, secret, { expiresIn: '10m' })
+                const link = `http://localhost:3000/api/user/reset/${userID}/${token}`
 
 
                 let mailOptions = {
@@ -306,7 +310,6 @@ const sendResetPasswordLink = asyncHandler(async (req, res) => {
         }
     })
 })
-
 const getResetPasswordPage = asyncHandler(async (req, res) => {
 
     let errors = {
@@ -317,7 +320,11 @@ const getResetPasswordPage = asyncHandler(async (req, res) => {
     }
 
     const { id, token } = req.params;
-    findUserByID({ _id: id }, (err, user) => {
+
+
+    findUserByID(id, (err, user) => {
+
+
         if (err) {
             console.log(err)
             res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -327,7 +334,7 @@ const getResetPasswordPage = asyncHandler(async (req, res) => {
                 res.render('serverError.ejs', { errorType: "404", error: "page not found!" });
             }
             else {
-                verifyJWT(token, process.env.JWT_SECRET + user[0].password, (err, payload) => {
+                verifyJWT(token, process.env.JWT_SECRET + user[0].email, (err, payload) => {
                     if (err) {
                         console.log(err)
                         res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -370,7 +377,7 @@ const resetToNewPassword = asyncHandler(async (req, res) => {
     }
     const { id, token } = req.params;
 
-    findUserByID({ _id: id }, (err, user) => {
+    findUserByID(id, (err, user) => {
         if (err) {
             console.log(err)
             res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -381,10 +388,11 @@ const resetToNewPassword = asyncHandler(async (req, res) => {
             }
             else {
 
-                const secret = process.env.JWT_SECRET + user[0].password;
+                const secret = process.env.JWT_SECRET + user[0].email;
                 try {
                     const payload = jwt.verify(token, secret)
-                    updatePassword({ id: user[0].id, password: req.body.password }, (err) => {
+                    const userID = (process.env.DB === 'mySQL') ? user[0].userID : user[0].id;
+                    updatePassword({ id: userID, password: req.body.password }, (err) => {
                         if (err) {
                             console.log(err)
                             res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -416,13 +424,12 @@ const resetToNewPassword = asyncHandler(async (req, res) => {
                     res.render('serverError.ejs', { errorType: "Server Error!", error: err })
                     return
                 }
-                res.redirect('/api/user/login');
+                // res.redirect('/api/user/login');
 
             }
         }
     })
 })
-
 const getResetPasswordOnProfile = asyncHandler(async (req, res) => {
     let errors = {
         opasswordErr: "",
@@ -483,7 +490,7 @@ const setResetPasswordOnProfile = asyncHandler(async (req, res) => {
                     return
                 }
                 else {
-                    updatePassword({ id: user[0].id, password: req.body.password }, (err) => {
+                    updatePassword({ id: (process.env.DB === 'mySQL') ? user[0].userID : user[0].id, password: req.body.password }, (err) => {
                         if (err) {
                             console.log(err)
                             res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -539,7 +546,7 @@ const searchUser = asyncHandler(async (req, res) => {
                 else {
                     res.send({
                         found: true,
-                        id: user[0].id
+                        id: (process.env.DB === 'mySQL') ? user[0].userID : user[0].id
                     })
                 }
             }
@@ -553,7 +560,23 @@ const searchUser = asyncHandler(async (req, res) => {
     })
 
 })
+const changeProfileOfUser = asyncHandler(async (req, res) => {
+    pictureUploaded = req.file.filename;
+    updatePictureOnMyProfile(req.session.userId, pictureUploaded, (err, chat) => {
+        if (err) {
+            console.log(err)
+            res.render('serverError.ejs', { errorType: "Server Error!", error: err })
+
+        }
+        else {
+            req.session.picture = pictureUploaded;
+            res.send({ status: "ok", picture: pictureUploaded });
+        }
+    })
+})
+
+
 module.exports =
 {
-    getSignUpPage, registerUser, verifyUser, getLoginPage, authorizeUser, getForgotPasswordPage, sendResetPasswordLink, getResetPasswordPage, resetToNewPassword, getResetPasswordOnProfile, setResetPasswordOnProfile, logOutFromChat, searchUser
+    getSignUpPage, registerUser, verifyUser, getLoginPage, authorizeUser, getForgotPasswordPage, sendResetPasswordLink, getResetPasswordPage, resetToNewPassword, getResetPasswordOnProfile, setResetPasswordOnProfile, logOutFromChat, searchUser, changeProfileOfUser
 }

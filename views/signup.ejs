@@ -10,23 +10,31 @@
 </head>
 
 <body>
-    <form method="POST" action="/api/user/signup" enctype="multipart/form-data">
+    <form id="myForm" method="POST" action="/api/user/signup" enctype="multipart/form-data">
         <label for="signupText" id="signupText">Sign Up</label>
         <label for="name" class="inputLabel">Name</label>
         <input type="text" name="name" id="name" value="<%=savedName%>" required />
-        <label for="error" class="error"><%=nameErr%></label>
+        <label for="error" class="error">
+            <%=nameErr%>
+        </label>
 
         <label for="email" class="inputLabel">Email</label>
-        <input type="email" name="email" id="email" value="<%=savedEmail%>" required/>
-        <label for="error" class="error"><%=emailErr%></label>
+        <input type="email" name="email" id="email" value="<%=savedEmail%>" required />
+        <label for="error" class="error">
+            <%=emailErr%>
+        </label>
 
         <label for="password" class="inputLabel">Password</label>
-        <input type="password" name="password" id="password" value="<%=savedPassword%>" required/>
-        <label for="error" class="error"><%=passwordErr%></label>
+        <input type="password" name="password" id="password" value="<%=savedPassword%>" required />
+        <label for="error" class="error">
+            <%=passwordErr%>
+        </label>
 
         <label for="cpassword" class="inputLabel">Confirm Password</label>
-        <input type="password" name="cpassword" id="cpassword" value="<%=savedCPassword%>" required/>
-        <label for="error" class="error"><%=cpasswordErr%></label>
+        <input type="password" name="cpassword" id="cpassword" value="<%=savedCPassword%>" required />
+        <label for="error" class="error">
+            <%=cpasswordErr%>
+        </label>
 
         <label for="displayPicture" class="inputLabel">Select a picture</label>
         <input type="file" name="displayPicture" id="displayPicture" accept="image/*">
@@ -39,7 +47,24 @@
 
     </form>
 
-  
+    <script>
+        const myForm = document.getElementById('myForm');
+        const submit = document.getElementById('submit');
+        myForm.addEventListener('submit', (event) => {
+            if (!event.isTrusted) {
+                event.preventDefault();
+                console.log('You are not trusted');
+
+            }
+        });
+
+        submit.addEventListener('click', (event) => {
+            if (!event.isTrusted) {
+                event.preventDefault();
+                console.log('You are not trusted');
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,8 +1,12 @@
 const asyncHandler = require('express-async-handler');
-const { createAPersonalChat, createNewGroupChat, addParticipantToGroupInDB, addNewMessageToChat, findUserInChat, findAllChatsByID, findParticipantInChat, findChatById, findChatByIdAndDeleteParticipant, changeGroupNameByGroupId } = require('../config/methods/chatMethos');
-const { findAllMessages, createNewMessage, findUnReadMessagesInChat, readTheUnreadMessages } = require('../config/methods/messageMethods');
-const { findUserByEmail, findUserByID } = require('../config/methods/userLoginMethods');
-const { chatModel } = require('../config/models/chatModel');
+const dotenv = require('dotenv');
+const { chatModel } = require('../models/mongoModels/chatModel');
+const { findUserByEmail, findUserByID } = (process.env.DB === 'mySQL') ? require('../methods/sqlMethods/userLoginMethods') : require('../methods/mongoMethods/userLoginMethods');
+const { createAPersonalChat, createNewGroupChat, addParticipantToGroupInDB, addNewMessageToChat, findUserInChat, findAllChatsByID, findParticipantInChat, findChatById, findChatByIdAndDeleteParticipant, changeGroupNameByGroupId } = (process.env.DB === 'mySQL')?require('../methods/sqlMethods/chatMethos'):require('../methods/mongoMethods/chatMethos');
+const { findAllMessages, createNewMessage, findUnReadMessagesInChat, readTheUnreadMessages, exportMessagesFromChat } = (process.env.DB === 'mySQL') ? require('../methods/sqlMethods/messageMethods') : require('../methods/mongoMethods/messageMethods');
+
+
+dotenv.config();
 const createChat = asyncHandler(async (req, res) => {
     findUserByEmail(req.session.email, (err, user) => {
         if (err) {
@@ -11,7 +15,7 @@ const createChat = asyncHandler(async (req, res) => {
         }
         else {
             if (user.length !== 0) {
-                let id1 = user[0].id;
+                let id1 = (process.env.DB === 'mySQL') ? user[0].userID : user[0].id;
                 let id2 = req.body.id;
                 findUserInChat(id1, id2, (err, user) => {
                     if (err) {
@@ -23,7 +27,8 @@ const createChat = asyncHandler(async (req, res) => {
 
                             createAPersonalChat(id1, id2, (err, chat) => {
                                 if (!err) {
-                                    findUserByID({ _id: id2 }, (err, rdata) => {
+                                    findUserByID(id2, (err, rdata) => {
+
                                         res.send({ found: false, data: { id: chat.id, name: rdata[0].name } })
 
                                     })
@@ -32,7 +37,7 @@ const createChat = asyncHandler(async (req, res) => {
                             })
                         }
                         else {
-                            findUserByID({ _id: id2 }, (err, rdata) => {
+                            findUserByID(id2, (err, rdata) => {
                                 res.send({ found: true, data: { id: user[0].id, name: rdata[0].name } })
                             })
 
@@ -55,9 +60,9 @@ const getAllChats = asyncHandler(async (req, res) => {
         }
         else {
             if (user.length !== 0) {
-                findAllChatsByID(user[0].id, req.query.page, (err, data) => {
+                id = (process.env.DB === 'mySQL') ? user[0].userID : user[0].id;
+                findAllChatsByID(id, req.query.page, (err, data) => {
                     if (!err) {
-
                         res.send({ email: req.session.email, data });
                     }
                 })
@@ -83,7 +88,7 @@ const createMessage = asyncHandler(async (req, res) => {
         else {
             if (user.length !== 0) {
 
-                createNewMessage(req.body, user[0].id, (err, data) => {
+                createNewMessage(req.body, process.env.DB == 'mySQL' ? user[0].userID : user[0].id, (err, data) => {
                     if (err) {
                         console.log(err)
                         res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -107,7 +112,6 @@ const createMessage = asyncHandler(async (req, res) => {
         }
     })
 })
-
 const getMessages = asyncHandler(async (req, res) => {
     findAllMessages(req.query.chatId, req.query.page, (err, messages) => {
         if (err) {
@@ -138,7 +142,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
         else {
             if (user.length !== 0) {
 
-                createNewGroupChat(req.body.title.trim(), user[0].id, (err, data) => {
+                createNewGroupChat(req.body.title.trim(), process.env.DB === 'mySQL' ? user[0].userID : user[0].id, (err, data) => {
                     if (err) {
                         console.log(err)
                         res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -181,29 +185,32 @@ const addParticipantsToGroup = asyncHandler(async (req, res) => {
 
         }
         else {
+
             if (user.length !== 0) {
 
-                findParticipantInChat(req.body.groupID, user[0].id, (err, rdata) => {
+                findParticipantInChat(req.body.groupID, (process.env.DB === 'mySQL') ? user[0].userID : user[0].id, (err, rdata) => {
                     if (err) {
                         console.log(err)
                         res.render('serverError.ejs', { errorType: "Server Error!", error: err })
 
                     }
                     else {
+
                         if (rdata.length === 0) {
 
-                            addParticipantToGroupInDB(req.body.groupID, user[0].id, (err, data) => {
-                
+                            addParticipantToGroupInDB(req.body.groupID, (process.env.DB === 'mySQL') ? user[0].userID : user[0].id, (err, data) => {
+
                                 if (err) {
                                     console.log(err)
                                     res.render('serverError.ejs', { errorType: "Server Error!", error: err })
                                 }
                                 else {
-                                    
+
+
                                     res.send({
                                         success: true,
                                         message: "add success",
-                                        participants: data.participants
+                                        participants: process.env.DB === 'mySQL' ? data : data.participants
 
                                     })
                                 }
@@ -213,7 +220,7 @@ const addParticipantsToGroup = asyncHandler(async (req, res) => {
                             res.send({
                                 success: false,
                                 message: "already added",
-                                participants: rdata[0].participants
+                                participants: process.env.DB === 'mySQL' ? rdata : rdata[0].participants
                             })
                         }
                     }
@@ -248,7 +255,7 @@ const chageGroupName = asyncHandler(async (req, res) => {
         }
     })
 
-     
+
 })
 const checkForAdmin = asyncHandler(async (req, res) => {
 
@@ -270,7 +277,7 @@ const checkForAdmin = asyncHandler(async (req, res) => {
 })
 const deleteParticipantFromGroup = asyncHandler(async (req, res) => {
 
-    findChatByIdAndDeleteParticipant(req.body.chatId.trim(), req.body.participantId.trim(), (err, chat) => {
+    findChatByIdAndDeleteParticipant((process.env.DB === 'mySQL') ? req.body.chatId : req.body.chatId.trim(), (process.env.DB === 'mySQL') ? req.body.participantId : req.body.participantId.trim(), (err, chat) => {
         if (err) {
             console.log(err)
             res.render('serverError.ejs', { errorType: "Server Error!", error: err })
@@ -287,6 +294,7 @@ const deleteParticipantFromGroup = asyncHandler(async (req, res) => {
     })
 })
 const findUnReadMessagesByUserInChat = asyncHandler(async (req, res) => {
+
     findUnReadMessagesInChat(req.body.chatId, req.session.userId, (err, data) => {
         if (!err) {
             res.send({ length: data.length });
@@ -294,11 +302,28 @@ const findUnReadMessagesByUserInChat = asyncHandler(async (req, res) => {
     })
 })
 const readMessages = asyncHandler(async (req, res) => {
-    
+
     readTheUnreadMessages(req.body.chatId, req.session.userId, (err, data) => {
         if (!err) {
-            res.send({success:true})
+            res.send({ success: true })
         }
     })
 })
-module.exports = { createChat, getAllChats, createMessage, getMessages, createGroupChat, addParticipantsToGroup, checkForAdmin, deleteParticipantFromGroup, findUnReadMessagesByUserInChat,readMessages ,chageGroupName}
+const exportChat = asyncHandler(async (req, res) => {
+    if (req.query.startDate.trim() === '' || req.query.endDate.trim() === '') {
+
+    }
+    exportMessagesFromChat(req.query.chatId, req.query.startDate, req.query.endDate, (err, messages) => {
+        if (err) {
+            console.log(err)
+            res.render('serverError.ejs', { errorType: "Server Error!", error: err })
+        }
+        else {
+            res.render('exports.ejs', { messages, email: req.session.email, picture: req.query.chatImage, name: req.query.chatName });
+        }
+    })
+
+})
+
+
+module.exports = { createChat, getAllChats, createMessage, getMessages, createGroupChat, addParticipantsToGroup, checkForAdmin, deleteParticipantFromGroup, findUnReadMessagesByUserInChat, readMessages, chageGroupName, exportChat }
