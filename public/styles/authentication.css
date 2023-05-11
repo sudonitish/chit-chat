@@ -1,0 +1,78 @@
+.outer-section{
+  background-color: #eee;
+}
+.form-label-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-label-group input {
+  height: 3rem;
+}
+.form-control:focus {
+  border: 1px solid #000;
+  box-shadow: none;
+}
+
+.form-label-group .form-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  padding: 1rem;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+.form-label-group input:-webkit-autofill {
+  -webkit-box-shadow: inset 0 0 0px 1000px #fff !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+
+.form-label-group input:focus ~ .form-label,
+.form-label-group input:valid ~ .form-label,
+.form-label-group input:-webkit-autofill ~ .form-label 
+{
+  background: white;
+  width: auto;
+  height: auto;
+  padding: 13px 10px 0px 10px;
+  top: -1.5rem;
+  left: 10px;
+  font-size: 0.8rem;
+  opacity: 1;
+  color:#00000099;
+}
+
+
+.button-container{
+  margin-left: 52px;
+  margin-right: 0;
+}
+
+
+.form-button {
+  background-color: #fff;
+  color: #9c2dbdba;
+  font-size: 16px;
+  border: none;
+  width: 200px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-left: 10px;
+  border: 1px solid #9c2dbdba;
+}
+
+.form-button:hover {
+  background-color: #9c2dbdba;
+  color: #fff;
+}
+.forgot {
+  text-align: right;
+  padding-right: 10px; /* adjust the value as needed */
+}
