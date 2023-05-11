@@ -1,24 +1,15 @@
 const asyncHandler = require('express-async-handler');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer')
 const bcrypt = require('bcryptjs')
 const dotenv = require('dotenv');
-
+const Mailjet = require('node-mailjet');
+const mailjet = Mailjet.apiConnect(
+    process.env.MAILJET_API_KEY, process.env.MAILJET_API_SECRET
+);
 const { validateName, validateEmail, validatePassword, saveUserToDB, verifyJWT, updatePassword, findUserByEmail, findUserByID, updatePictureOnMyProfile } = (process.env.DB === 'mySQL') ? require('../methods/sqlMethods/userLoginMethods') : require('../methods/mongoMethods/userLoginMethods')
 
 dotenv.config();
-let transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    // requireTLS:true, // true for 465, false for other ports
-    auth: {
-        user: 'userverificati0ntest@gmail.com',
-        pass: 'spdpnnesztcdlcch',
-    },
-
-});
 const getSignUpPage = asyncHandler(async (req, res) => {
     let errors = {
         nameErr: "",
@@ -38,97 +29,108 @@ const getSignUpPage = asyncHandler(async (req, res) => {
     }
 })
 const registerUser = asyncHandler(async (req, res) => {
-        let errors = {
-            nameErr: "",
-            emailErr: "",
-            passwordErr: "",
-            cpasswordErr: "",
-            savedName: req.body.name,
-            savedEmail: req.body.email,
-            savedPassword: req.body.password,
-            savedCPassword: req.body.cpassword,
-        }
-        let err;
-        err = validateName(req.body.name);
-        if (err) {
-            errors.nameErr = err;
-            res.render('signup.ejs', errors)
-            return;
-        }
-        err = validateEmail(req.body.email)
-        if (err) {
-            errors.emailErr = err;
-            res.render('signup.ejs', errors)
-            return
-        }
-        err = validatePassword(req.body.password)
-        if (err) {
-            errors.passwordErr = err;
-            res.render('signup.ejs', errors)
-            return
-        }
-        err = validatePassword(req.body.cpassword)
-        if (err) {
-            errors.cpasswordErr = err;
-            res.render('signup.ejs', errors)
-            return
-        }
-        if (req.body.password !== req.body.cpassword) {
-            errors.cpasswordErr = "password does'nt match!";
-            res.render('signup.ejs', errors)
-            return
-        }
+    
+    let errors = {
+        nameErr: "",
+        emailErr: "",
+        passwordErr: "",
+        cpasswordErr: "",
+        savedName: req.body.name,
+        savedEmail: req.body.email,
+        savedPassword: req.body.password,
+        savedCPassword: req.body.cpassword,
+    }
+    let err;
+    err = validateName(req.body.name);
+    if (err) {
+        errors.nameErr = err;
+        res.render('signup.ejs', errors)
+        return;
+    }
+    err = validateEmail(req.body.email)
+    if (err) {
+        errors.emailErr = err;
+        res.render('signup.ejs', errors)
+        return
+    }
+    err = validatePassword(req.body.password)
+    if (err) {
+        errors.passwordErr = err;
+        res.render('signup.ejs', errors)
+        return
+    }
+    err = validatePassword(req.body.cpassword)
+    if (err) {
+        errors.cpasswordErr = err;
+        res.render('signup.ejs', errors)
+        return
+    }
+    if (req.body.password !== req.body.cpassword) {
+        errors.cpasswordErr = "password does'nt match!";
+        res.render('signup.ejs', errors)
+        return
+    }
 
 
-        findUserByEmail(req.body.email, (err, user) => {
-            if (err) {
-                console.log(err)
-                res.render('serverError.ejs', { errorType: "Server Error!", error: err })
+    findUserByEmail(req.body.email, (err, user) => {
+        if (err) {
+            console.log(err)
+            res.render('serverError.ejs', { errorType: "Server Error!", error: err })
+        }
+        else {
+            if (user.length !== 0) {
+                errors.emailErr = "email already exisits"
+                res.render('signup.ejs', errors)
             }
             else {
-                if (user.length !== 0) {
-                    errors.emailErr = "email already exisits"
-                    res.render('signup.ejs', errors)
+                let pictureUploaded = 'default.png';
+                if (req.file) {
+                    pictureUploaded = req.file.filename
                 }
-                else {
-                    let pictureUploaded = 'default.png';
-                    if (req.file) {
-                        pictureUploaded = req.file.filename
-                    }
-                    const secret = process.env.JWT_SECRET + req.body.email;
-                    const payload = {
-                        name: req.body.name,
-                        email: req.body.email,
-                        password: req.body.password,
-                        picture: pictureUploaded,
-                        isAdmin: false
+                const secret = process.env.JWT_SECRET + req.body.email;
+                const payload = {
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: req.body.password,
+                    picture: pictureUploaded,
+                    isAdmin: false
 
-                    }
-                    const token = jwt.sign(payload, secret)
-                    const link = `http://localhost:3000/api/user/verify/${payload.email}/${token}`
+                }
+                const token = jwt.sign(payload, secret)
+                const link = `http://localhost:3000/api/user/verify/${payload.email}/${token}`
 
-                    let mailOptions = {
-                        from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
-                        to: req.body.email,
-                        subject: " Email Verification ✔",
-                        html: `To verify email address <a href=${link}>click</a> here.`,
-                    };
-                    transporter.sendMail(mailOptions, (err, info) => {
-                        if (err) {
-                            console.log(err)
-                        }
-                        else {
-                            console.log("email send success", info.response)
+                let transporter = mailjet.post("send", { 'version': 'v3.1' }).request({
+                    "Messages": [{
+                        "From": {
+                            "Email": process.env.SENDER_EMAIL,
+                            "Name": "Chit Chat 👻"
+                        },
+                        "To": [{
+                            "Email": req.body.email,
+                            "Name": ""
+                        }],
+                        "Subject": " Email Verification ✔",
+                        "HTMLPart": `To verify email address <a href=${link}>click</a> here.`,
+                    }]
+                });
 
-                        }
+                transporter
+                    .then(result => {
+                        console.log("email send success");
+                        res.send({ error: false, message: 'Please verify your email address,verification email send to your email...' })
+
+                        return
                     })
+                    .catch(err => {
+                        console.log(err);
+                    });
 
-                    res.render('redirect.ejs', { message: 'Please verify your email address,verification email send to your email...' })
+                res.render('redirect.ejs', { message: 'Please verify your email address,verification email send to your email...' })
 
-                    return
-                }
+                return
             }
-        })
+        }
+    })
 })
 const verifyUser = asyncHandler(async (req, res) => {
     const { name, token } = req.params;
@@ -157,20 +159,25 @@ const verifyUser = asyncHandler(async (req, res) => {
                             else {
 
 
-                                let mailOptions = {
-                                    from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
-                                    to: payload.email,
-                                    subject: " Email Verification ✔",
-                                    text: 'Email Verified successfully',
-                                };
-                                transporter.sendMail(mailOptions, (err, info) => {
-                                    if (err) {
-                                        console.log(err)
-                                    }
-                                    else {
-                                        console.log("email send success", info.response)
-                                    }
-                                })
+                                let transporter = mailjet.post("send", { 'version': 'v3.1' }).request({
+                                    "Messages": [{
+                                        "From": {
+                                            "Email": process.env.SENDER_EMAIL,
+                                            "Name": "Chit Chat 👻"
+                                        },
+                                        "To": [{
+                                            "Email": payload.email,
+                                        }],
+                                        "Subject": " Email Verification ✔",
+                                        "TextPart": "Email Verified successfully",
+                                    }]
+                                });
+
+                                transporter.then((result) => {
+                                    console.log("email send success");
+                                }).catch((err) => {
+                                    console.log(err);
+                                });
                                 res.render('redirect.ejs', { message: 'Email verified successfully...' })
                                 console.log('saved successfully')
                                 req.session.is_logged_in = true;
@@ -204,6 +211,7 @@ const getLoginPage = asyncHandler(async (req, res) => {
     }
 })
 const authorizeUser = asyncHandler(async (req, res) => {
+    
     let errors = {
         emailErr: "",
         passwordErr: "",
@@ -288,21 +296,33 @@ const sendResetPasswordLink = asyncHandler(async (req, res) => {
                 const link = `http://localhost:3000/api/user/reset/${userID}/${token}`
 
 
-                let mailOptions = {
-                    from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
-                    to: user[0].email,
-                    subject: "Reset Password ✔",
-                    html: `To reset your password ,please <a href=${link}>click</a> here.`,
-                };
-                transporter.sendMail(mailOptions, (err, info) => {
-                    if (err) {
-                        console.log(err)
-                    }
-                    else {
-                        console.log("email send success", info.response)
+                const request = mailjet
+                    .post("send", { 'version': 'v3.1' })
+                    .request({
+                        "Messages": [
+                            {
+                                "From": {
+                                    "Email": process.env.SENDER_EMAIL,
+                                    "Name": "Chit Chat"
+                                },
+                                "To": [
+                                    {
+                                        "Email": user[0].email
+                                    }
+                                ],
+                                "Subject": "Reset Password",
+                                "HTMLPart": `To reset your password, please <a href=${link}>click here</a>.`
+                            }
+                        ]
+                    });
 
-                    }
+                request.then((result) => {
+                    console.log("email send success")
                 })
+                    .catch((err) => {
+                        console.log("error")
+                        console.log(err.statusCode, err.message)
+                    });
                 res.render('redirect.ejs', { message: 'Password reset link sent to your email...' })
 
                 return
@@ -398,20 +418,33 @@ const resetToNewPassword = asyncHandler(async (req, res) => {
                             res.render('serverError.ejs', { errorType: "Server Error!", error: err })
                         }
                         else {
-                            let mailOptions = {
-                                from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
-                                to: user[0].email,
-                                subject: "Reset Password ✔",
-                                text: 'password updated successfully',
-                            };
-                            transporter.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                    console.log(err)
-                                }
-                                else {
-                                    console.log("email send success", info.response)
-                                }
+                            const request = mailjet
+                            .post("send", { 'version': 'v3.1' })
+                            .request({
+                                "Messages": [
+                                    {
+                                        "From": {
+                                            "Email": process.env.SENDER_EMAIL,
+                                            "Name": "Chit Chat"
+                                        },
+                                        "To": [
+                                            {
+                                                "Email": user[0].email
+                                            }
+                                        ],
+                                        "Subject": "Reset Password",
+                                        "TextPart": "Password updated successfully"
+                                    }
+                                ]
+                            });
+
+                        request
+                            .then((result) => {
+                                console.log("email send success")
                             })
+                            .catch((err) => {
+                                console.log(err.statusCode, err.message)
+                            });
                             res.render('redirect.ejs', { message: 'Password updated successfully...' })
                             console.log('password updated successfully')
                             return
@@ -498,20 +531,29 @@ const setResetPasswordOnProfile = asyncHandler(async (req, res) => {
                         else {
                             req.session.destroy();
 
-                            let mailOptions = {
-                                from: `"chit-chat 👻" <userverificati0ntest@gmail.com>`,
-                                to: user[0].email,
-                                subject: "Reset Password ✔",
-                                text: 'password updated successfully',
-                            };
-                            transporter.sendMail(mailOptions, (err, info) => {
-                                if (err) {
-                                    console.log(err)
-                                }
-                                else {
-                                    console.log("email send success", info.response)
-                                }
-                            })
+                            const transporter = mailjet
+                                    .post("send", { 'version': 'v3.1' })
+                                    .request({
+                                        "Messages": [{
+                                            "From": {
+                                                "Email": process.env.SENDER_EMAIL,
+                                                "Name": "Chit Chat 👻"
+                                            },
+                                            "To": [{
+                                                "Email": user[0].email,
+                                            }],
+                                            "Subject": "Reset Password ✔",
+                                            "TextPart": "password updated successfully",
+                                        }]
+                                    });
+
+                                transporter
+                                    .then((result) => {
+                                        console.log("email send success");
+                                    })
+                                    .catch((err) => {
+                                        console.log(err.statusCode, err.message);
+                                    });
                             res.render('redirect.ejs', { message: 'Password updated successfully...' })
                             console.log('password updated successfully')
                             return
