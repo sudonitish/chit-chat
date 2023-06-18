@@ -10,9 +10,9 @@
 </head>
 
 <body>
-    <div id="profile">
-        <img src="<%=picture%>" alt="" id="picture">
-        <label for="chatName" id="name"><%=name%></label>
+    <div class="profile">
+        <img src="<%=picture%>" alt="picture" class="picture" height="100" width="100">
+        <label for="chatName" class="name"><%=name%></label>
     </div>
     <%messages.forEach(message=>{%>
         <div class="message">

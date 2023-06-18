@@ -1,20 +1,17 @@
 
-#profile{
+.profile{
 display: flex;
 flex-direction: column;
-justify-content: center;
 align-items: center;
 }
-#name{
+.name{
 text-transform: uppercase;
 font-size: 20px;
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+font-family: sans-serif;
 font-weight: bold;
 margin: 10px 0 30px 0;
 }
-#picture{
-height: 100px;
-width: 100px;
+.picture{
 border-radius: 50%;
 }
 .message{
@@ -23,15 +20,12 @@ flex-direction: column;
 background-color: #0000000f;
 margin: 10px 10px 10px 10px;
 padding:10px 10px ;
-box-shadow: 0 1px 4px 0 #3a3a3a;
+border: 1px solid #000000;
 }
 .messageSender{
 font-weight: bold;
 margin: 0 0 10px 0;
 }
-.messageData{
-    margin: 0 0 5px 0;
-}
-.messageTime{
-    margin: 0 0 5px 0;
+.messageData,.messageTime{
+    margin-bottom: 5px
 }
