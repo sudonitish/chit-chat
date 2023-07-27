@@ -97,7 +97,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
                 }
                 const token = jwt.sign(payload, secret)
-                const link = `http://localhost:3000/api/user/verify/${payload.email}/${token}`
+                const link = `${process.env.WEBURL}/api/user/verify/${payload.email}/${token}`
 
                 let transporter = mailjet.post("send", { 'version': 'v3.1' }).request({
                     "Messages": [{
@@ -293,7 +293,7 @@ const sendResetPasswordLink = asyncHandler(async (req, res) => {
                     id: userID
                 }
                 const token = jwt.sign(payload, secret, { expiresIn: '10m' })
-                const link = `http://localhost:3000/api/user/reset/${userID}/${token}`
+                const link = `${process.env.WEBURL}/api/user/reset/${userID}/${token}`
 
 
                 const request = mailjet
