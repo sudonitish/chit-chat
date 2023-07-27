@@ -1,6 +1,5 @@
-
-const url = 'http://localhost:3000';
-const socket = io("http://localhost:3000");
+const url = '';
+const socket = io("chit-chat-socket");
 let messageToSend = document.getElementById("messageToSend")
 let showMessage = document.getElementById("showMessage");
 let showChats = document.getElementById('showChats')

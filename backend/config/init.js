@@ -14,7 +14,7 @@ module.exports = async function () {
     if (process.env.DB === 'mySQL') {
         connection.connect((err) => {
             if (err) throw err;
-            console.log('Connected to MySQL database!, Go to http://'+ process.env.HOST + ':' + process.env.PORT);
+            console.log('Connected to MySQL database!');
         });
         userModel();
         chatModel();
@@ -25,7 +25,7 @@ module.exports = async function () {
             mongoose.set('strictQuery', false);
             try {
                 const conn = await mongoose.connect(process.env.MONGO_URI)
-                console.log('Connected to MongoBD database! Go to http://'+ process.env.HOST + ':' + process.env.PORT);
+                console.log('Connected to MongoBD database!');
             }
             catch (err) {
                 console.log(`ERROR: ${err.message}`)
