@@ -31,7 +31,7 @@ module.exports = {
             user.email = user.email.toLowerCase();
             userModel.create(user)
                 .then((rUser) => {
-                    callback(null, data)
+                    callback(null, rUser)
 
                 })
                 .catch((err) => {
